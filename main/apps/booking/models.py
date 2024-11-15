@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext as _
-from user.models import UserProfile
-from field.models import Field
+from ..user.models import UserProfile
+from ..field.models import Field
 from ..common.models import BaseModel, BaseMeta
 
 

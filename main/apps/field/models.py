@@ -1,8 +1,9 @@
 from django.db import models
 from ..common.models import BaseModel, BaseMeta
 from .utils import upload_field_images
-from ..user.models import UserProfile
+from ..user.models import User
 from django.utils.translation import gettext as _
+from django.contrib.gis.db import models as gis_models
 
 
 class Field(BaseModel):
@@ -10,9 +11,10 @@ class Field(BaseModel):
     address = models.CharField(max_length=255)
     contact = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=25, decimal_places=2)
-    owner = models.ForeignKey(UserProfile, on_delete=models.SET_NULL, null=True, related_name='field_owner')
-    local = models.CharField(max_length=255)
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='field_owner')
     images = models.ImageField(upload_to=upload_field_images, null=True, blank=True)
+    latitude = models.FloatField(null=True, blank=True)  
+    longitude = models.FloatField(null=True, blank=True)
 
 
     def __str__(self):
@@ -21,3 +23,10 @@ class Field(BaseModel):
     class Meta(BaseMeta):
         verbose_name = _('Field')
         verbose_name_plural = _('Fields')
+
+
+    @property
+    def location(self):
+        if self.latitude and self.longitude:
+            return gis_models.Point(self.longitude, self.latitude)
+        return None

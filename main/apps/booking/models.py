@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext as _
-from ..user.models import UserProfile
+from ..user.models import User
 from ..field.models import Field
 from ..common.models import BaseModel, BaseMeta
 
@@ -9,9 +9,9 @@ from ..common.models import BaseModel, BaseMeta
 
 class Booking(BaseModel):
     field = models.ForeignKey(Field, on_delete=models.CASCADE, related_name='booking_field')
-    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='booking_user')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='booking_user')
     start_time = models.DateTimeField()
-    endi_time = models.DateTimeField()
+    end_time = models.DateTimeField()
     is_active = models.BooleanField(default=True)
 
 

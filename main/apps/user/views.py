@@ -1,16 +1,16 @@
-from main.apps.user.models import UserProfile
-from main.apps.user.serializers import UserProfileSerializer
-from ..field.serializers import FieldSerializer
+from main.apps.user.models import User
+from main.apps.user.serializers import UserLoginSerializer, UserRegistrationSerializer, UserSerializer
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 
 
 class UserCreateAPIView(generics.CreateAPIView):
-    serializer_class = UserProfileSerializer
-    queryset = UserProfile.objects.all()
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
     # permission_classes = [permissions.IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
@@ -21,3 +21,40 @@ class UserCreateAPIView(generics.CreateAPIView):
     
 
 user_create_api_view = UserCreateAPIView.as_view()
+
+
+class AuthUserRegistrationView(generics.GenericAPIView):
+    serializer_class = UserRegistrationSerializer
+    queryset = User.objects.all()
+    # permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        valid = serializer.is_valid(raise_exception=True)
+        if valid:
+            serializer.save()
+        status_code = status.HTTP_201_CREATED 
+        response = {
+            'success': True,
+            'statusCode': status_code,
+            'message': 'User succesfully registered',
+            'user': serializer.data
+        }
+        return Response(response, status=status_code)
+
+user_registration_api_view = AuthUserRegistrationView.as_view()
+
+
+
+class UserLoginView(TokenObtainPairView):
+    # permission_classes = (permissions.AllowAny,)
+    serializer_class = UserLoginSerializer
+
+    def get(self, request, *args, **kwargs):
+        try:
+            response = super().get(request, *args, **kwargs)
+            return response
+        except Exception as e:
+            return Response({'success': False, 'error': str(e)})
+
+user_login_api_view = UserLoginView().as_view()

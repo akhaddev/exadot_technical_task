@@ -6,5 +6,15 @@ from .models import Field
 class FieldSerializer(serializers.ModelSerializer):
     class Meta:
         model = Field
-        fields = '__all__'
+        fields = (
+            'id',
+            "field",
+            'address',
+            'contact',
+            'price',
+            'owner',
+            'images',
+            'latitude',
+            'longitude'
+        )
 
